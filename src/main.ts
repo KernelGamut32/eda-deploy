@@ -1,11 +1,44 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import * as create_lambda_role from './create-lambda-role';
+import * as create_sns_topic from './create-sns-topic';
+import * as create_sqs_queue from './create-sqs-queue';
+import * as create_sns_sqs_subscription from './create-sns-sqs-subscription';
+import * as create_dynamodb_table from './create-dynamodb-table';
+import * as create_sqs_dynamodb_lambda_service from './create-sqs-dynamodb-lambda-service';
 
-export class MyStack extends Stack {
+export class EdaDeployStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
     super(scope, id, props);
 
-    // define resources here...
+    const lambdaRole = new create_lambda_role.CreateLambdaRole(this, 'OrderProcessorRole');
+
+    const ordersTopic = new create_sns_topic.CreateSnsTopic(this, 'OrdersTopic', 'Orders');
+
+    const euOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'EUOrdersQueue', 'EUOrders');
+    const largeEUOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeEUOrdersQueue', 'LargeEUOrders');
+    const largeOtherOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeOtherOrdersQueue', 'LargeOtherOrders');
+
+    const euOrdersQueueSubscription =
+      new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'EUOrdersSubscription', ordersTopic.topic.ref,
+        '{"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">",0,"<",100]}]}', euOrdersQueue.queue.ref);
+    const largeEUOrdersQueueSubscription =
+      new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeEUOrdersSubscription', ordersTopic.topic.ref,
+        '{"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">=",100]}]}', largeEUOrdersQueue.queue.ref);
+    const largeOtherOrdersQueueSubscription =
+      new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeOtherOrdersSubscription', ordersTopic.topic.ref,
+        '{"quantity":[{"numeric":[">=",100]}]}', largeOtherOrdersQueue.queue.ref);
+
+    const euOrdersTable = new create_dynamodb_table.CreateDynamoDbTable(this, 'EUOrdersTable', 'EUOrders');
+    const largeEUOrdersTable = new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeEUOrdersTable', 'LargeEUOrders');
+    const largeOtherOrdersTable = new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeOtherOrdersTable', 'LargeOtherOrders');
+
+    const euOrderProcessor = new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'EUOrderProcessor',
+      lambdaRole.role, 'EUOrderProcessor', euOrdersQueue.queue.ref);
+    const largeEUOrderProcessor = new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'LargeEUOrderProcessor',
+      lambdaRole.role, 'LargeEUOrderProcessor', largeEUOrdersQueue.queue.ref);
+    const largeOtherOrderProcessor = new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'LargeOtherOrderProcessor',
+      lambdaRole.role, 'LargeOtherOrderProcessor', largeOtherOrdersQueue.queue.ref);
   }
 }
 
@@ -17,7 +50,7 @@ const devEnv = {
 
 const app = new App();
 
-new MyStack(app, 'eda-deploy-dev', { env: devEnv });
-// new MyStack(app, 'eda-deploy-prod', { env: prodEnv });
+new EdaDeployStack(app, 'eda-deploy-dev', { env: devEnv });
+// new EdaDeployStack(app, 'eda-deploy-prod', { env: prodEnv });
 
 app.synth();
