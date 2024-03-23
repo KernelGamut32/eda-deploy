@@ -16,9 +16,9 @@ export class EdaDeployStack extends Stack {
 
     const ordersTopic = new create_sns_topic.CreateSnsTopic(this, 'OrdersTopic', 'Orders');
 
-    const euOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'EUOrdersQueue', 'EUOrders');
-    const largeEUOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeEUOrdersQueue', 'LargeEUOrders');
-    const largeOtherOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeOtherOrdersQueue', 'LargeOtherOrders');
+    const euOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'EUOrdersQueue', 'EUOrders', ordersTopic.topic.topicArn);
+    const largeEUOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeEUOrdersQueue', 'LargeEUOrders', ordersTopic.topic.topicArn);
+    const largeOtherOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeOtherOrdersQueue', 'LargeOtherOrders', ordersTopic.topic.topicArn);
 
     new create_sns_sqs_subscription.CreateSnsSqsSubscription(this,
       'EUOrdersSubscription',
