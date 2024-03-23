@@ -5,12 +5,11 @@ export class CreateSnsSqsSubscription extends Construct {
     constructor(scope: Construct, id: string, topicArn: string, filterPolicy: any, endpointArn: string) {
         super(scope, id);
 
-        new sns.CfnSubscription(this, 'SNSSubscription', {
-            topicArn: topicArn,
-            filterPolicy: filterPolicy,
-            filterPolicyScope: 'MessageBody',
+        new sns.Subscription(this, 'SNSSubscription', {
+            topic: sns.Topic.fromTopicArn(this, 'SNSTopic', topicArn),
+            filterPolicyWithMessageBody: filterPolicy,
             endpoint: endpointArn,
-            protocol: 'sqs',
+            protocol: sns.SubscriptionProtocol.SQS,
             rawMessageDelivery: false,
             region: 'us-east-1',
         });
