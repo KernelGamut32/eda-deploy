@@ -8,6 +8,7 @@ export class CreateSnsSqsSubscription extends Construct {
         new sns.CfnSubscription(this, 'SNSSubscription', {
             topicArn: topicArn,
             filterPolicy: filterPolicy,
+            filterPolicyScope: 'MessageBody',
             endpoint: endpoint,
             protocol: 'sqs',
             rawMessageDelivery: false,
