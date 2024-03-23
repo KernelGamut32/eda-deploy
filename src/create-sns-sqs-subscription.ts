@@ -2,7 +2,7 @@ import { Construct } from "constructs";
 import * as sns from 'aws-cdk-lib/aws-sns';
 
 export class CreateSnsSqsSubscription extends Construct {
-    constructor(scope: Construct, id: string, topicArn: string, filterPolicy: string, endpoint: string) {
+    constructor(scope: Construct, id: string, topicArn: string, filterPolicy: any, endpoint: string) {
         super(scope, id);
 
         new sns.CfnSubscription(this, 'SNSSubscription', {
