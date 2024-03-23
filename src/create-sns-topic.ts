@@ -1,4 +1,4 @@
-import { Construct } from "constructs";
+import { Construct } from 'constructs';
 import * as sns from 'aws-cdk-lib/aws-sns';
 
 export class CreateSnsTopic extends Construct {

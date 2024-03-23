@@ -1,4 +1,4 @@
-import { Construct } from "constructs";
+import { Construct } from 'constructs';
 import * as sns from 'aws-cdk-lib/aws-sns';
 
 export class CreateSnsSqsSubscription extends Construct {
@@ -9,9 +9,9 @@ export class CreateSnsSqsSubscription extends Construct {
             topicArn: topicArn,
             filterPolicy: filterPolicy,
             endpoint: endpoint,
-            protocol: "sqs",
+            protocol: 'sqs',
             rawMessageDelivery: false,
-            region: "us-east-1"
+            region: 'us-east-1'
         });
     }
 }

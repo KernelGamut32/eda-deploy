@@ -1,4 +1,4 @@
-import { Construct } from "constructs";
+import { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 export class CreateDynamoDbTable extends Construct {
@@ -8,16 +8,16 @@ export class CreateDynamoDbTable extends Construct {
     new dynamodb.CfnTable(this, id, {
       attributeDefinitions: [
         {
-          attributeName: "MessageId",
-          attributeType: "S"
+          attributeName: 'MessageId',
+          attributeType: 'S'
         }
       ],
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       tableName: tableName,
       keySchema: [
         {
-          attributeName: "MessageId",
-          keyType: "HASH"
+          attributeName: 'MessageId',
+          keyType: 'HASH'
         }
       ]
     });

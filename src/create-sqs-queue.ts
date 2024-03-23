@@ -1,6 +1,6 @@
-import { Construct } from "constructs";
+import { Construct } from 'constructs';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { Duration } from "aws-cdk-lib";
+import { Duration } from 'aws-cdk-lib';
 
 export class CreateSqsQueue extends Construct {
     public queue: sqs.Queue;

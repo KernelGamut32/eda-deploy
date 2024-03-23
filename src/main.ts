@@ -20,11 +20,11 @@ export class EdaDeployStack extends Stack {
     const largeOtherOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeOtherOrdersQueue', 'LargeOtherOrders');
 
     new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'EUOrdersSubscription', ordersTopic.topic.ref,
-      {"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">",0,"<",100]}]}, euOrdersQueue.queue.queueArn);
+      {location:[{prefix: 'eu'}], quantity:[{numeric:['>',0,'<',100]}]}, euOrdersQueue.queue.queueArn);
     new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeEUOrdersSubscription', ordersTopic.topic.ref,
-      {"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">=",100]}]}, largeEUOrdersQueue.queue.queueArn);
+      {location:[{prefix: 'eu'}], quantity:[{numeric:['>=',100]}]}, largeEUOrdersQueue.queue.queueArn);
     new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeOtherOrdersSubscription', ordersTopic.topic.ref,
-      {"quantity":[{"numeric":[">=",100]}]}, largeOtherOrdersQueue.queue.queueArn);
+      {quantity:[{numeric:['>=',100]}]}, largeOtherOrdersQueue.queue.queueArn);
 
     new create_dynamodb_table.CreateDynamoDbTable(this, 'EUOrdersTable', 'EUOrders');
     new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeEUOrdersTable', 'LargeEUOrders');
