@@ -2,12 +2,10 @@ import { Construct } from "constructs";
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 export class CreateDynamoDbTable extends Construct {
-  public table: dynamodb.CfnTable;
-
   constructor(scope: Construct, id: string, tableName: string) {
     super(scope, id);
 
-    this.table = new dynamodb.CfnTable(this, id, {
+    new dynamodb.CfnTable(this, id, {
       attributeDefinitions: [
         {
           attributeName: "MessageId",

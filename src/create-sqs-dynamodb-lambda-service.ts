@@ -4,12 +4,10 @@ import { Role } from 'aws-cdk-lib/aws-iam';
 import * as lambda from "aws-cdk-lib/aws-lambda";
 
 export class CreateSqsDynamoDBLambdaService extends Construct {
-  public lambdaFunction: lambda.Function;
-
   constructor(scope: Construct, id: string, role: Role, functionName: string, sqsQueueRef: string) {
     super(scope, id);
 
-    this.lambdaFunction = new lambda.Function(this, id, {
+    new lambda.Function(this, id, {
       functionName: functionName,
       runtime: lambda.Runtime.PYTHON_3_12,
       code: lambda.Code.fromAsset(`resources/${functionName}`),
@@ -24,7 +22,6 @@ export class CreateSqsDynamoDBLambdaService extends Construct {
       functionName: functionName,
       enabled: true,
       maximumBatchingWindowInSeconds: 0
-    }
-    );
+    });
   }
 }

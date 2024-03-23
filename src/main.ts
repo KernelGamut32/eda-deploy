@@ -19,25 +19,22 @@ export class EdaDeployStack extends Stack {
     const largeEUOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeEUOrdersQueue', 'LargeEUOrders');
     const largeOtherOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeOtherOrdersQueue', 'LargeOtherOrders');
 
-    const euOrdersQueueSubscription =
-      new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'EUOrdersSubscription', ordersTopic.topic.ref,
-        '{"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">",0,"<",100]}]}', euOrdersQueue.queue.ref);
-    const largeEUOrdersQueueSubscription =
-      new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeEUOrdersSubscription', ordersTopic.topic.ref,
-        '{"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">=",100]}]}', largeEUOrdersQueue.queue.ref);
-    const largeOtherOrdersQueueSubscription =
-      new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeOtherOrdersSubscription', ordersTopic.topic.ref,
-        '{"quantity":[{"numeric":[">=",100]}]}', largeOtherOrdersQueue.queue.ref);
+    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'EUOrdersSubscription', ordersTopic.topic.ref,
+      '{"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">",0,"<",100]}]}', euOrdersQueue.queue.ref);
+    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeEUOrdersSubscription', ordersTopic.topic.ref,
+      '{"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">=",100]}]}', largeEUOrdersQueue.queue.ref);
+    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeOtherOrdersSubscription', ordersTopic.topic.ref,
+      '{"quantity":[{"numeric":[">=",100]}]}', largeOtherOrdersQueue.queue.ref);
 
-    const euOrdersTable = new create_dynamodb_table.CreateDynamoDbTable(this, 'EUOrdersTable', 'EUOrders');
-    const largeEUOrdersTable = new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeEUOrdersTable', 'LargeEUOrders');
-    const largeOtherOrdersTable = new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeOtherOrdersTable', 'LargeOtherOrders');
+    new create_dynamodb_table.CreateDynamoDbTable(this, 'EUOrdersTable', 'EUOrders');
+    new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeEUOrdersTable', 'LargeEUOrders');
+    new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeOtherOrdersTable', 'LargeOtherOrders');
 
-    const euOrderProcessor = new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'EUOrderProcessor',
+    new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'EUOrderProcessor',
       lambdaRole.role, 'EUOrderProcessor', euOrdersQueue.queue.ref);
-    const largeEUOrderProcessor = new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'LargeEUOrderProcessor',
+    new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'LargeEUOrderProcessor',
       lambdaRole.role, 'LargeEUOrderProcessor', largeEUOrdersQueue.queue.ref);
-    const largeOtherOrderProcessor = new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'LargeOtherOrderProcessor',
+    new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'LargeOtherOrderProcessor',
       lambdaRole.role, 'LargeOtherOrderProcessor', largeOtherOrdersQueue.queue.ref);
   }
 }
