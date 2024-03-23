@@ -6,6 +6,7 @@ import * as create_sqs_queue from './create-sqs-queue';
 import * as create_sns_sqs_subscription from './create-sns-sqs-subscription';
 import * as create_dynamodb_table from './create-dynamodb-table';
 import * as create_sqs_dynamodb_lambda_service from './create-sqs-dynamodb-lambda-service';
+import * as sns from 'aws-cdk-lib/aws-sns';
 
 export class EdaDeployStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
@@ -19,12 +20,49 @@ export class EdaDeployStack extends Stack {
     const largeEUOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeEUOrdersQueue', 'LargeEUOrders');
     const largeOtherOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeOtherOrdersQueue', 'LargeOtherOrders');
 
-    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'EUOrdersSubscription', ordersTopic.topic.topicArn,
-      { location: [{ prefix: 'eu' }], quantity: [{ numeric: ['>', 0, '<', 100] }] }, euOrdersQueue.queue.queueArn);
-    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeEUOrdersSubscription', ordersTopic.topic.topicArn,
-      { location: [{ prefix: 'eu' }], quantity: [{ numeric: ['>=', 100] }] }, largeEUOrdersQueue.queue.queueArn);
-    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeOtherOrdersSubscription', ordersTopic.topic.topicArn,
-      { quantity: [{ numeric: ['>=', 100] }] }, largeOtherOrdersQueue.queue.queueArn);
+    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 
+      'EUOrdersSubscription', 
+      ordersTopic.topic.topicArn,
+      {
+        location: sns.FilterOrPolicy.filter(
+          sns.SubscriptionFilter.stringFilter({
+            matchPrefixes: ['eu'],
+          }),
+        ), 
+        quantity: sns.FilterOrPolicy.filter(
+          sns.SubscriptionFilter.numericFilter({
+            between: { start: 0, stop: 100 },
+          }),
+        )
+      }, 
+      euOrdersQueue.queue.queueArn);
+    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 
+      'LargeEUOrdersSubscription', 
+      ordersTopic.topic.topicArn,
+      {
+        location: sns.FilterOrPolicy.filter(
+          sns.SubscriptionFilter.stringFilter({
+            matchPrefixes: ['eu'],
+          }),
+        ), 
+        quantity: sns.FilterOrPolicy.filter(
+          sns.SubscriptionFilter.numericFilter({
+            greaterThanOrEqualTo: 100,
+          }),
+        )
+      }, 
+      largeEUOrdersQueue.queue.queueArn);
+    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 
+      'LargeOtherOrdersSubscription', 
+      ordersTopic.topic.topicArn,
+      {
+        quantity: sns.FilterOrPolicy.filter(
+          sns.SubscriptionFilter.numericFilter({
+            greaterThanOrEqualTo: 100,
+          })
+        )
+      }, 
+      largeOtherOrdersQueue.queue.queueArn);
 
     new create_dynamodb_table.CreateDynamoDbTable(this, 'EUOrdersTable', 'EUOrders');
     new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeEUOrdersTable', 'LargeEUOrders');
