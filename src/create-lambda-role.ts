@@ -10,13 +10,13 @@ export class CreateLambdaRole extends Construct {
         this.role = new Role(this, id, {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
         });
-        this.role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
 
         new ManagedPolicy(this, "OrderProcessorPolicy", {
             statements: [
                 new PolicyStatement({
                     effect: Effect.ALLOW,
                     actions: [
+                        "logs:CreateLogGroup",
                         "logs:CreateLogStream",
                         "logs:PutLogEvents",
                         "dynamodb:DeleteItem",
@@ -24,9 +24,11 @@ export class CreateLambdaRole extends Construct {
                         "dynamodb:PutItem",
                         "dynamodb:Scan",
                         "dynamodb:UpdateItem",
+                        "sqs:ReceiveMessage",
+                        "sqs:ChangeMessageVisibility",
+                        "sqs:GetQueueUrl",
                         "sqs:DeleteMessage",
-                        "sqs:GetQueueAttributes",
-                        "sqs:ReceiveMessage"
+                        "sqs:GetQueueAttributes"        
                     ],
                     resources: ["*"]
                 })
