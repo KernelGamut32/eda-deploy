@@ -24,16 +24,11 @@ export class CreateLambdaRole extends Construct {
                         'dynamodb:PutItem',
                         'dynamodb:Scan',
                         'dynamodb:UpdateItem',
-                        'sqs:ReceiveMessage',
-                        'sqs:ChangeMessageVisibility',
-                        'sqs:GetQueueUrl',
-                        'sqs:DeleteMessage',
-                        'sqs:GetQueueAttributes'        
                     ],
-                    resources: ['*']
-                })
+                    resources: ['*'],
+                }),
             ],
-            roles: [this.role]
+            roles: [this.role],
         });
     }
 }

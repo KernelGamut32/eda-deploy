@@ -9,17 +9,17 @@ export class CreateDynamoDbTable extends Construct {
       attributeDefinitions: [
         {
           attributeName: 'MessageId',
-          attributeType: 'S'
-        }
+          attributeType: 'S',
+        },
       ],
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       tableName: tableName,
       keySchema: [
         {
           attributeName: 'MessageId',
-          keyType: 'HASH'
-        }
-      ]
+          keyType: 'HASH',
+        },
+      ],
     });
   }
 }

@@ -14,7 +14,7 @@ export class CreateSqsQueue extends Construct {
             retentionPeriod: Duration.days(4),
             receiveMessageWaitTime: Duration.seconds(0),
             visibilityTimeout: Duration.seconds(30),
-            queueName: queueName
+            queueName: queueName,
         });
     }
 }

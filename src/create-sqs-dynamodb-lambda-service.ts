@@ -23,7 +23,7 @@ export class CreateSqsDynamoDBLambdaService extends Construct {
         batchSize: 10,
         enabled: true,
         maxBatchingWindow: cdk.Duration.seconds(0),
-      })
+      }),
     );
   }
 }

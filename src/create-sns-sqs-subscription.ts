@@ -12,7 +12,7 @@ export class CreateSnsSqsSubscription extends Construct {
             endpoint: endpoint,
             protocol: 'sqs',
             rawMessageDelivery: false,
-            region: 'us-east-1'
+            region: 'us-east-1',
         });
     }
 }

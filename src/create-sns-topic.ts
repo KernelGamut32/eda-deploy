@@ -8,7 +8,7 @@ export class CreateSnsTopic extends Construct {
         super(scope, id);
 
         this.topic = new sns.CfnTopic(this, 'SNSTopic', {
-            topicName: topicName
+            topicName: topicName,
         });
     }
 }
