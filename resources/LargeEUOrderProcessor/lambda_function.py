@@ -23,6 +23,7 @@ def lambda_handler(event, context):
                 'MessageId': message['messageId'],
                 'Body': message['body'],
                 'Quantity': message_details['quantity'],
+                'Country': message_details['country'],
                 'Timestamp': datetime.now().isoformat()
             }
         )

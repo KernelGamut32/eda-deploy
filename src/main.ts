@@ -20,40 +20,40 @@ export class EdaDeployStack extends Stack {
     const largeEUOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeEUOrdersQueue', 'LargeEUOrders');
     const largeOtherOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeOtherOrdersQueue', 'LargeOtherOrders');
 
-    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 
-      'EUOrdersSubscription', 
+    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this,
+      'EUOrdersSubscription',
       ordersTopic.topic.topicArn,
       {
         location: sns.FilterOrPolicy.filter(
           sns.SubscriptionFilter.stringFilter({
             matchPrefixes: ['eu'],
           }),
-        ), 
+        ),
         quantity: sns.FilterOrPolicy.filter(
           sns.SubscriptionFilter.numericFilter({
-            between: { start: 0, stop: 100 },
+            betweenStrict: { start: 0, stop: 100 },
           }),
         )
-      }, 
+      },
       euOrdersQueue.queue.queueArn);
-    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 
-      'LargeEUOrdersSubscription', 
+    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this,
+      'LargeEUOrdersSubscription',
       ordersTopic.topic.topicArn,
       {
         location: sns.FilterOrPolicy.filter(
           sns.SubscriptionFilter.stringFilter({
             matchPrefixes: ['eu'],
           }),
-        ), 
+        ),
         quantity: sns.FilterOrPolicy.filter(
           sns.SubscriptionFilter.numericFilter({
             greaterThanOrEqualTo: 100,
           }),
         )
-      }, 
+      },
       largeEUOrdersQueue.queue.queueArn);
-    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 
-      'LargeOtherOrdersSubscription', 
+    new create_sns_sqs_subscription.CreateSnsSqsSubscription(this,
+      'LargeOtherOrdersSubscription',
       ordersTopic.topic.topicArn,
       {
         quantity: sns.FilterOrPolicy.filter(
@@ -61,7 +61,7 @@ export class EdaDeployStack extends Stack {
             greaterThanOrEqualTo: 100,
           })
         )
-      }, 
+      },
       largeOtherOrdersQueue.queue.queueArn);
 
     new create_dynamodb_table.CreateDynamoDbTable(this, 'EUOrdersTable', 'EUOrders');

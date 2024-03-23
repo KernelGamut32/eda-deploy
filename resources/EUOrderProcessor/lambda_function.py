@@ -16,10 +16,13 @@ def lambda_handler(event, context):
         # Write message to DynamoDB
         table = dynamodb.Table('EUOrders')
 
+        message_content = json.loads(message['body'])['Message']
+        message_details = json.loads(message_content)
         response = table.put_item(
             Item={
                 'MessageId': message['messageId'],
                 'Body': message['body'],
+                'Country': message_details['country'],
                 'Timestamp': datetime.now().isoformat()
             }
         )
