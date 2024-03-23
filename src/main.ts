@@ -20,22 +20,22 @@ export class EdaDeployStack extends Stack {
     const largeOtherOrdersQueue = new create_sqs_queue.CreateSqsQueue(this, 'LargeOtherOrdersQueue', 'LargeOtherOrders');
 
     new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'EUOrdersSubscription', ordersTopic.topic.ref,
-      {"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">",0,"<",100]}]}, euOrdersQueue.queue.ref);
+      {"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">",0,"<",100]}]}, euOrdersQueue.queue.queueArn);
     new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeEUOrdersSubscription', ordersTopic.topic.ref,
-      {"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">=",100]}]}, largeEUOrdersQueue.queue.ref);
+      {"location":[{"prefix": "eu"}],"quantity":[{"numeric":[">=",100]}]}, largeEUOrdersQueue.queue.queueArn);
     new create_sns_sqs_subscription.CreateSnsSqsSubscription(this, 'LargeOtherOrdersSubscription', ordersTopic.topic.ref,
-      {"quantity":[{"numeric":[">=",100]}]}, largeOtherOrdersQueue.queue.ref);
+      {"quantity":[{"numeric":[">=",100]}]}, largeOtherOrdersQueue.queue.queueArn);
 
     new create_dynamodb_table.CreateDynamoDbTable(this, 'EUOrdersTable', 'EUOrders');
     new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeEUOrdersTable', 'LargeEUOrders');
     new create_dynamodb_table.CreateDynamoDbTable(this, 'LargeOtherOrdersTable', 'LargeOtherOrders');
 
     new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'EUOrderProcessor',
-      lambdaRole.role, 'EUOrderProcessor', euOrdersQueue.queue.ref);
+      lambdaRole.role, 'EUOrderProcessor', euOrdersQueue.queue);
     new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'LargeEUOrderProcessor',
-      lambdaRole.role, 'LargeEUOrderProcessor', largeEUOrdersQueue.queue.ref);
+      lambdaRole.role, 'LargeEUOrderProcessor', largeEUOrdersQueue.queue);
     new create_sqs_dynamodb_lambda_service.CreateSqsDynamoDBLambdaService(this, 'LargeOtherOrderProcessor',
-      lambdaRole.role, 'LargeOtherOrderProcessor', largeOtherOrdersQueue.queue.ref);
+      lambdaRole.role, 'LargeOtherOrderProcessor', largeOtherOrdersQueue.queue);
   }
 }
 

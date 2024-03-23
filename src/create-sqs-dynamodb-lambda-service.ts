@@ -2,12 +2,14 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { Role } from 'aws-cdk-lib/aws-iam';
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
+import { IQueue } from "aws-cdk-lib/aws-sqs";
 
 export class CreateSqsDynamoDBLambdaService extends Construct {
-  constructor(scope: Construct, id: string, role: Role, functionName: string, sqsQueueRef: string) {
+  constructor(scope: Construct, id: string, role: Role, functionName: string, sqsQueue: IQueue) {
     super(scope, id);
 
-    new lambda.Function(this, id, {
+    const newLambda = new lambda.Function(this, id, {
       functionName: functionName,
       runtime: lambda.Runtime.PYTHON_3_12,
       code: lambda.Code.fromAsset(`resources/${functionName}`),
@@ -16,12 +18,12 @@ export class CreateSqsDynamoDBLambdaService extends Construct {
       role: role,
     });
 
-    new lambda.CfnEventSourceMapping(this, 'LambdaEventSourceMapping', {
-      batchSize: 10,
-      eventSourceArn: sqsQueueRef,
-      functionName: functionName,
-      enabled: true,
-      maximumBatchingWindowInSeconds: 0
-    });
+    newLambda.addEventSource(
+      new SqsEventSource(sqsQueue, {
+        batchSize: 10,
+        enabled: true,
+        maxBatchingWindow: cdk.Duration.seconds(0),
+      })
+    );
   }
 }
